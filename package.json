@@ -1,0 +1,23 @@
+{
+  "name": "projet_synthese",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch",
+    "build": "webpack"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/web-bluetooth": "^0.0.9",
+    "bounding-boxes": "^4.0.0",
+    "ts-loader": "^8.0.17"
+  },
+  "devDependencies": {
+    "typescript": "^4.1.5",
+    "webpack": "^5.24.0",
+    "webpack-cli": "^4.5.0"
+  }
+}
