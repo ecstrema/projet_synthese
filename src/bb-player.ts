@@ -1,5 +1,6 @@
 import { BbBluetooth } from "./bb-bluetooth";
 import { BbGame } from "./bb-game";
+import { BbMouse } from "./bb-mouse";
 import { BbPacman } from "./bb-pacman";
 
 export class BbPlayer extends BbPacman {
@@ -17,17 +18,17 @@ export class BbPlayer extends BbPacman {
         }
     }
 
-    move(scene: BbGame) {
+    move(game: BbGame) {
         // No Bluetooth
         if (BbBluetooth.data == -1) {
             // lerp? (linear interpolation)...
             // this.bb.y = (scene.mouseY - this.bb.y) * 0.9 + this.bb.y;
 
             // or teleportation?
-            this.bb.y = scene.mouseY;
+            this.bb.y = BbMouse.mouseY;
         }
         else {
-            this.bb.y = (BbGame.getGame().bb.h - this.bb.h) * BbBluetooth.data / 8000;
+            this.bb.y = (game.bb.h - this.bb.h) * BbBluetooth.data / 8000;
         }
 
     }

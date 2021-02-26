@@ -1,24 +1,28 @@
 import { BbElement } from "./bb-element";
+import { BbMouse } from "./bb-mouse";
+import { BbPacman } from "./bb-pacman";
 import { BbPlayer } from "./bb-player";
+import { BbScore } from "./bb-score";
 import { BbTarget } from "./bb-target";
 
 export class BbGame extends BbElement {
     ctx: CanvasRenderingContext2D | null;
 
-    looping = false;
+    playing = false;
 
-    mouseX: number = 0;
-    mouseY: number = 0;
+    score: BbScore;
 
-    score: number = 0;
-
-    fps = 40;
+    public get speed(): number {
+        return Math.pow(this.score.value + 1, 1.1);
+    }
 
     player: BbPlayer;
     targets: BbTarget[];
 
     constructor() {
         super();
+
+        BbMouse.init();
 
         const container = document.body;
         container.style.margin = '0px';
@@ -30,20 +34,16 @@ export class BbGame extends BbElement {
         canvas.height = this.bb.height = container.scrollHeight;
         canvas.width = this.bb.width = container.scrollWidth;
 
-        window.addEventListener("mousemove", (ev: MouseEvent) => {
-            this.mouseX = ev.clientX;
-            this.mouseY = ev.clientY;
-        })
-
         document.body.appendChild(canvas);
         this.ctx = canvas.getContext("2d");
 
+        this.score = new BbScore();
         this.player = new BbPlayer(this);
         this.targets = [];
     }
 
     async refresh() {
-        if (!this.looping) {
+        if (!this.playing) {
             return;
         }
         if (!this.targets.length) {
@@ -58,7 +58,7 @@ export class BbGame extends BbElement {
         requestAnimationFrame(this.refresh.bind(this));
 
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-
+        this.score.paint(this.ctx);
         this.player.move(this);
         this.player.paint(this.ctx);
         this.targets.forEach((t: BbTarget) => {
@@ -75,13 +75,13 @@ export class BbGame extends BbElement {
             }
             if (!t.touched && t.bb.intersects(this.player.bb)) {
                 t.touched = true;
-                t.versLeBas = this.score % 2 ? true : false;
-                this.score++;
+                t.versLeBas = this.score.value % 2 ? true : false;
+                this.score.value++;
                 this.addTarget();
             }
         });
 
-        BbPlayer.updateMouthAngle();
+        BbPacman.updateMouthAngle();
     }
 
     async removeTarget(t: BbTarget) {
@@ -92,21 +92,21 @@ export class BbGame extends BbElement {
         for (let i = 0; i < this.targets.length; i++) {
             const element = this.targets[i];
             if (!element) {
-                this.targets[i] = new BbTarget();
+                this.targets[i] = new BbTarget(this);
                 return;
             }
         }
-        this.targets.push(new BbTarget());
+        this.targets.push(new BbTarget(this));
     }
 
     start() {
-        this.looping = true;
-        this.targets.push(new BbTarget());
+        this.playing = true;
+        this.targets.push(new BbTarget(this));
         this.refresh();
     }
 
     stop() {
-        this.looping = false;
+        this.playing = false;
     }
 
     static getGame(): BbGame {
@@ -118,4 +118,5 @@ export class BbGame extends BbElement {
     }
 
     private static pGame: BbGame | null = null;
+    private static creatingSingleton = false;
 }

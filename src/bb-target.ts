@@ -6,12 +6,11 @@ export class BbTarget extends BbPacman {
 
     versLeBas = false;
 
-    constructor() {
+    constructor(game: BbGame) {
         super();
 
         this.goingLeft = true;
 
-        const game = BbGame.getGame();
         if (!game) {
             throw new Error("This element is not part of a game.")
         }
@@ -27,14 +26,14 @@ export class BbTarget extends BbPacman {
     move(game: BbGame) {
         if (this.touched) {
             if (this.versLeBas) {
-                this.bb.y += game.bb.width * 0.005 * (game.score + 1);
+                this.bb.y += game.bb.width * 0.005 * (game.speed);
             }
             else {
-                this.bb.y -= game.bb.width * 0.005 * (game.score + 1);
+                this.bb.y -= game.bb.width * 0.005 * (game.speed);
             }
         }
         else {
-            this.bb.x -= game.bb.width * 0.005 * (game.score + 1), 0;
+            this.bb.x -= game.bb.width * 0.005 * (game.speed), 0;
         }
         return this;
     }

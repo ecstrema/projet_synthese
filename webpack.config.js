@@ -1,9 +1,7 @@
 const path = require('path');
 
-module.exports = {
-  mode: "development",
+var config = {
   entry: './src/main.ts',
-  devtool: 'inline-source-map',
   module: {
     rules: [
       {
@@ -20,4 +18,17 @@ module.exports = {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
   },
+};
+
+module.exports = (env, argv) => {
+  if (argv.mode === 'development') {
+    config.devtool = 'inline-source-map';
+    config.mode = 'development';
+  }
+
+  if (argv.mode === 'production') {
+    config.mode = 'production';
+  }
+
+  return config;
 };

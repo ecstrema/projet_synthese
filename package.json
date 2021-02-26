@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch": "webpack --watch",
-    "build": "webpack",
-    "push": "webpack && cp ./dist/bundle.js ../bundle.js && git checkout pages && mv ../bundle.js ./dist/bundle.js && git push && git checkout master"
+    "watch": "webpack --watch --mode=development",
+    "build": "webpack --mode=development",
+    "build:prod": "webpack",
+    "push": "npm run build:prod && cp ./dist/bundle.js ../bundle.js && git checkout pages && mv ../bundle.js ./dist/bundle.js && git add . && git commit -m 'update package' && git push && git checkout master"
   },
   "author": "",
   "license": "ISC",
