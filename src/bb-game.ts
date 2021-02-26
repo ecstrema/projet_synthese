@@ -80,6 +80,8 @@ export class BbGame extends BbElement {
                 this.addTarget();
             }
         });
+
+        BbPlayer.updateMouthAngle();
     }
 
     async removeTarget(t: BbTarget) {
@@ -106,14 +108,14 @@ export class BbGame extends BbElement {
     stop() {
         this.looping = false;
     }
-}
 
-export function getGame(): BbGame {
-    if (!game) {
-        game = new BbGame();
-        return game;
+    static getGame(): BbGame {
+        if (!BbGame.pGame) {
+            BbGame.pGame = new BbGame();
+            return BbGame.pGame;
+        }
+        return BbGame.pGame;
     }
-    return game;
-}
 
-let game: BbGame | null;
+    private static pGame: BbGame | null = null;
+}

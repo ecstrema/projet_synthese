@@ -1,7 +1,7 @@
-import { BbElement } from "./bb-element";
-import { BbGame, getGame } from "./bb-game";
+import { BbGame } from "./bb-game";
+import { BbPacman } from "./bb-pacman";
 
-export class BbTarget extends BbElement {
+export class BbTarget extends BbPacman {
     touched: boolean = false;
 
     versLeBas = false;
@@ -9,7 +9,9 @@ export class BbTarget extends BbElement {
     constructor() {
         super();
 
-        const game = getGame();
+        this.goingLeft = true;
+
+        const game = BbGame.getGame();
         if (!game) {
             throw new Error("This element is not part of a game.")
         }
@@ -22,21 +24,17 @@ export class BbTarget extends BbElement {
         }
     }
 
-    paint(ctx: CanvasRenderingContext2D) {
-        ctx.fillRect(this.bb.x, this.bb.y, this.bb.w, this.bb.h);
-    }
-
     move(game: BbGame) {
         if (this.touched) {
             if (this.versLeBas) {
                 this.bb.y += game.bb.width * 0.005 * (game.score + 1);
             }
             else {
-                this.bb.y += game.bb.width * -0.005 * (game.score + 1);
+                this.bb.y -= game.bb.width * 0.005 * (game.score + 1);
             }
         }
         else {
-            this.bb.x += game.bb.width * -0.005 * (game.score + 1), 0;
+            this.bb.x -= game.bb.width * 0.005 * (game.score + 1), 0;
         }
         return this;
     }

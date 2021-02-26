@@ -1,7 +1,8 @@
-import { BbElement } from "./bb-element";
+import { BbBluetooth } from "./bb-bluetooth";
 import { BbGame } from "./bb-game";
+import { BbPacman } from "./bb-pacman";
 
-export class BbPlayer extends BbElement {
+export class BbPlayer extends BbPacman {
     constructor(game: BbGame) {
         super();
 
@@ -16,15 +17,18 @@ export class BbPlayer extends BbElement {
         }
     }
 
-    paint(ctx: CanvasRenderingContext2D) {
-        ctx.fillRect(this.bb.x, this.bb.y, this.bb.w, this.bb.h);
-    }
-
     move(scene: BbGame) {
-        // lerp? (linear interpolation)...
-        // this.bb.y = (scene.mouseY - this.bb.y) * 0.9 + this.bb.y;
+        // No Bluetooth
+        if (BbBluetooth.data == -1) {
+            // lerp? (linear interpolation)...
+            // this.bb.y = (scene.mouseY - this.bb.y) * 0.9 + this.bb.y;
 
-        // or teleportation?
-        this.bb.y = scene.mouseY;
+            // or teleportation?
+            this.bb.y = scene.mouseY;
+        }
+        else {
+            this.bb.y = (BbGame.getGame().bb.h - this.bb.h) * BbBluetooth.data / 8000;
+        }
+
     }
 }
