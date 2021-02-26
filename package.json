@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --watch",
-    "build": "webpack"
+    "build": "webpack",
+    "push": "webpack && cp ./dist/bundle.js ../bundle.js && git checkout pages && mv ../bundle.js ./dist/bundle.js && git push && git checkout master"
   },
   "author": "",
   "license": "ISC",
