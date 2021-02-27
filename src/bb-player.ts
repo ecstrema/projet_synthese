@@ -25,7 +25,7 @@ export class BbPlayer extends BbPacman {
             // this.bb.y = (scene.mouseY - this.bb.y) * 0.9 + this.bb.y;
 
             // or teleportation?
-            this.bb.y = BbMouse.mouseY;
+            this.bb.y = BbMouse.mouseY - this.bb.h * 0.5;
         }
         else {
             this.bb.y = (game.bb.h - this.bb.h) * BbBluetooth.data / 8000;

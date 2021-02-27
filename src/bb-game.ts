@@ -36,6 +36,21 @@ export class BbGame extends BbElement {
         this.score = new BbScore();
         this.player = new BbPlayer(this);
         this.targets = [];
+
+        this.ctx?.canvas.addEventListener("click", () => this.restartIfNotPlaying());
+        this.ctx?.canvas.addEventListener("keyup", () => this.restartIfNotPlaying());
+    }
+
+    restartIfNotPlaying() {
+        if (!this.playing) {
+            this.restart();
+        }
+    }
+
+    restart() {
+        this.targets = [];
+        this.score.reset();
+        this.start();
     }
 
     async refresh() {
@@ -65,17 +80,55 @@ export class BbGame extends BbElement {
             if (t.bb.intersects(this.bb) && this.ctx) {
                 t.paint(this.ctx);
             }
+            else if (t.bb.x < 0) {
+                this.playing = false;
+                this.gameOverFrame();
+            }
             else {
                 this.removeTarget(t);
                 return;
             }
             if (!t.touched && t.bb.intersects(this.player.bb)) {
+                this.removeTarget(t);
                 t.touched = true;
                 this.score.value++;
             }
         });
 
         BbPacman.updateMouthAngle();
+    }
+
+    gameOverFrame(count = 0) {
+        this.score.move(this);
+        if (count > 100) {
+            if (this.ctx) {
+                this.ctx.save();
+                this.ctx.fillStyle = "black";
+                this.ctx.fillRect(0, 0, this.bb.w, this.bb.h);
+                this.ctx.fillStyle = "white";
+                this.score.paint(this.ctx);
+                this.ctx.font = "30px Helvetica";
+                const t = "Appuyez sur une touche pour rejouer.";
+                const m = this.ctx.measureText(t);
+                this.ctx.fillText(t, (this.bb.w - m.width) * 0.5, this.bb.h * 0.5 + this.score.sizePx * 2);
+                this.ctx.restore();
+            }
+            return;
+        }
+        if (this.ctx) {
+            this.ctx.save();
+            this.ctx.fillStyle = "#00000055";
+            this.ctx.fillRect(0, 0, this.bb.w, this.bb.h);
+            this.ctx.fillStyle = "white";
+            this.score.paint(this.ctx);
+            this.ctx.restore();
+        }
+        else {
+            throw new Error("No Context set at end of game???");
+        }
+        setTimeout(() => {
+            this.gameOverFrame.bind(this)(count + 1);
+        }, 30);
     }
 
     async removeTarget(t: BbTarget) {
@@ -101,8 +154,6 @@ export class BbGame extends BbElement {
         }
         this.addTarget();
         const nextTimeoutIn = Math.max(Math.random() * 5000 / (this.score.value + 1), 1000);
-        console.log(nextTimeoutIn);
-
         setTimeout(this.addTargetCallbacks.bind(this), nextTimeoutIn);
     }
 
