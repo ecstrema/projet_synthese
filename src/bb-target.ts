@@ -1,40 +1,35 @@
+import { BbElement } from "./bb-element";
 import { BbGame } from "./bb-game";
-import { BbPacman } from "./bb-pacman";
 
-export class BbTarget extends BbPacman {
+export class BbTarget extends BbElement {
     touched: boolean = false;
 
-    versLeBas = false;
+    speed = 1;
 
     constructor(game: BbGame) {
         super();
 
-        this.goingLeft = true;
+        this.bb.height = this.bb.width = game.bb.h * 0.02;
+        const margins = game.bb.height * 0.1;
 
-        if (!game) {
-            throw new Error("This element is not part of a game.")
-        }
-        else {
-            this.bb.height = this.bb.width = game.bb.height * 0.2;
-            const margins = game.bb.height * 0.1;
+        this.bb.y = Math.random() * (game.bb.height - this.bb.height - margins) + margins;
+        this.bb.x = game.bb.w;
+    }
 
-            this.bb.y = Math.random() * (game.bb.height - this.bb.height - margins) + margins;
-            this.bb.x = game.bb.w;
+    paint(ctx: CanvasRenderingContext2D) {
+        if (this.touched) {
+            return;
         }
+        const radius = (this.bb.x2 - this.bb.x1) * 0.5;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(this.bb.x + radius, this.bb.y + radius, radius, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.restore();
     }
 
     move(game: BbGame) {
-        if (this.touched) {
-            if (this.versLeBas) {
-                this.bb.y += game.bb.width * 0.005 * (game.speed);
-            }
-            else {
-                this.bb.y -= game.bb.width * 0.005 * (game.speed);
-            }
-        }
-        else {
-            this.bb.x -= game.bb.width * 0.005 * (game.speed), 0;
-        }
+        this.bb.x -= game.bb.width * 0.005 * this.speed;
         return this;
     }
 }

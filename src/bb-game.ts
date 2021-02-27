@@ -12,10 +12,6 @@ export class BbGame extends BbElement {
 
     score: BbScore;
 
-    public get speed(): number {
-        return Math.pow(this.score.value + 1, 1.1);
-    }
-
     player: BbPlayer;
     targets: BbTarget[];
 
@@ -75,9 +71,7 @@ export class BbGame extends BbElement {
             }
             if (!t.touched && t.bb.intersects(this.player.bb)) {
                 t.touched = true;
-                t.versLeBas = this.score.value % 2 ? true : false;
                 this.score.value++;
-                this.addTarget();
             }
         });
 
@@ -92,16 +86,29 @@ export class BbGame extends BbElement {
         for (let i = 0; i < this.targets.length; i++) {
             const element = this.targets[i];
             if (!element) {
-                this.targets[i] = new BbTarget(this);
+                const newTarget = new BbTarget(this);
+                newTarget.speed = Math.random() * (this.score.value + 1);
+                this.targets[i] = newTarget;
                 return;
             }
         }
         this.targets.push(new BbTarget(this));
     }
 
+    addTargetCallbacks() {
+        if (!this.playing) {
+            return;
+        }
+        this.addTarget();
+        const nextTimeoutIn = Math.max(Math.random() * 5000 / (this.score.value + 1), 1000);
+        console.log(nextTimeoutIn);
+
+        setTimeout(this.addTargetCallbacks.bind(this), nextTimeoutIn);
+    }
+
     start() {
         this.playing = true;
-        this.targets.push(new BbTarget(this));
+        this.addTargetCallbacks();
         this.refresh();
     }
 
@@ -118,5 +125,4 @@ export class BbGame extends BbElement {
     }
 
     private static pGame: BbGame | null = null;
-    private static creatingSingleton = false;
 }
