@@ -99,6 +99,9 @@ export class BbGame extends BbElement {
     }
 
     gameOverFrame(count = 0) {
+        if (this.playing) {
+            return;
+        }
         this.score.move(this);
         if (count > 100) {
             if (this.ctx) {
