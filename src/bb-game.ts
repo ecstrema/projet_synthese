@@ -1,9 +1,11 @@
+import { BbBackground } from "./bb-background";
 import { BbElement } from "./bb-element";
 import { BbMouse } from "./bb-mouse";
 import { BbPacman } from "./bb-pacman";
 import { BbPlayer } from "./bb-player";
 import { BbScore } from "./bb-score";
 import { BbTarget } from "./bb-target";
+import { BbArrayUtils } from "./utils/bb-array-utils";
 
 export class BbGame extends BbElement {
     ctx: CanvasRenderingContext2D | null;
@@ -13,7 +15,8 @@ export class BbGame extends BbElement {
     score: BbScore;
 
     player: BbPlayer;
-    targets: BbTarget[];
+    targets: (BbTarget|null)[];
+    background: BbBackground;
 
     constructor() {
         super();
@@ -35,6 +38,7 @@ export class BbGame extends BbElement {
 
         this.score = new BbScore();
         this.player = new BbPlayer(this);
+        this.background = new BbBackground();
         this.targets = [];
 
         this.ctx?.canvas.addEventListener("click", () => this.restartIfNotPlaying());
@@ -50,6 +54,7 @@ export class BbGame extends BbElement {
     restart() {
         this.targets = [];
         this.score.reset();
+        this.background.reset();
         this.start();
     }
 
@@ -69,10 +74,13 @@ export class BbGame extends BbElement {
         requestAnimationFrame(this.refresh.bind(this));
 
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+
+        this.background.move(this);
+        this.background.paint(this.ctx);
         this.score.paint(this.ctx);
         this.player.move(this);
         this.player.paint(this.ctx);
-        this.targets.forEach((t: BbTarget) => {
+        this.targets.forEach((t: BbTarget|null) => {
             if (!t) {
                 return;
             }
@@ -139,16 +147,7 @@ export class BbGame extends BbElement {
     }
 
     addTarget(): void {
-        for (let i = 0; i < this.targets.length; i++) {
-            const element = this.targets[i];
-            if (!element) {
-                const newTarget = new BbTarget(this);
-                newTarget.speed = Math.random() * (this.score.value + 1);
-                this.targets[i] = newTarget;
-                return;
-            }
-        }
-        this.targets.push(new BbTarget(this));
+        BbArrayUtils.fillFirstEmpty(BbTarget, this.targets, this);
     }
 
     addTargetCallbacks() {
@@ -163,6 +162,7 @@ export class BbGame extends BbElement {
     start() {
         this.playing = true;
         this.addTargetCallbacks();
+        this.background.start();
         this.refresh();
     }
 

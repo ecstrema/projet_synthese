@@ -9,6 +9,8 @@ export class BbTarget extends BbElement {
     constructor(game: BbGame) {
         super();
 
+        this.speed = Math.random() * (game.score.value + 1);
+
         this.bb.height = this.bb.width = game.bb.h * 0.02;
         const margins = game.bb.height * 0.1;
 
