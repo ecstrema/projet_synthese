@@ -3,7 +3,7 @@ import { BbBluetooth } from "./bb-bluetooth";
 
 function startGame() {
     const htmlExceptGame = document.getElementById("htmlExceptGame");
-    htmlExceptGame?.style.setProperty("visibility", "hidden");
+    htmlExceptGame?.style.setProperty("display", "none");
     const game = BbGame.getGame();
     game.start();
 }

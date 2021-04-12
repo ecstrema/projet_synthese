@@ -1,4 +1,5 @@
 export class BbBluetooth {
+    static data: number = -1;
     static async connect() {
         return navigator.bluetooth.requestDevice({
             filters: [{
@@ -44,11 +45,6 @@ export class BbBluetooth {
             } else {
                 console.error("Cannot be notified by characteristic?... Weird");
             }
-        })
-        .catch(error => {
-            console.log('Argh! ' + error);
         });
     }
-
-    static data: number = -1;
 }

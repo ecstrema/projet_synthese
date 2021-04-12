@@ -12,11 +12,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/web-bluetooth": "^0.0.9",
     "bounding-boxes": "^4.0.0",
     "ts-loader": "^8.0.17"
   },
   "devDependencies": {
+    "@types/web-bluetooth": "0.0.9",
     "typescript": "^4.1.5",
     "webpack": "^5.24.0",
     "webpack-cli": "^4.5.0"
