@@ -12,7 +12,7 @@ function seedData() {
     for (var i = 0; i < MAX_LENGTH; ++i) {
         lineArr.push({
             time: new Date(now.getTime() - ((MAX_LENGTH - i) * duration)),
-            x: 0
+            x: 0,
         });
     }
 }
@@ -22,29 +22,34 @@ function updateData() {
 
     var lineData = {
         time: now,
-        x: randInt(0, 5),
+        x: randInt(0, 10000) * 0.01,
     };
     lineArr.push(lineData);
-
-    //   if (lineArr.length > 30) {
-    //     lineArr.shift();
-    //   }
-    d3.select("#chart").datum(lineArr.slice(lineArr.length - MAX_LENGTH, lineArr.length)).call(chart);
+    d3.select("#chart")
+        .datum(lineArr.slice(lineArr.length - MAX_LENGTH, lineArr.length))
+        .call(chart);
 }
 
 function resize() {
-    if (d3.select("#chart svg").empty()) {
+    const s = d3.select("#chart svg");
+    if (s.empty()) {
         return;
     }
     const c = d3.select("#chart");
-    chart.width(+c.style("width").replace(/(px)/g, ""));
-    //   chart.height(+c.style("height").replace(/(px)/g, ""));
+    chart.width(+c.style("width").replace(/(px)/g, "") * 0.8);
+    chart.height(window.innerHeight - 20);
     c.call(chart);
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    seedData();
-    window.setInterval(updateData, 100);
-    d3.select("#chart").datum(lineArr).call(chart);
-    d3.select(window).on('resize', resize);
+    d3.select("#bluetoothButton").on("click", function() {
+        //connect.toBluetooth
+        d3.select("#htmlExceptGraph").style("display", "none");
+
+
+        seedData();
+        window.setInterval(updateData, 100);
+        d3.select("#chart").datum(lineArr).call(chart);
+        d3.select(window).on('resize', resize);
+    })
 });

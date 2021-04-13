@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/d3": "^6.3.0",
     "bounding-boxes": "^4.0.0",
     "ts-loader": "^8.0.17"
   },
