@@ -28,10 +28,7 @@ function realTimeLineChart() {
         })).getTime() - (duration*2));
 
         x.domain([xMin, xMax]);
-        y.domain([
-          0,
-          d3.max(data, function(c) { return d3.max(c.values, function(d) { return d.value; })})
-        ]);
+        y.domain([0, 100]);
         z.domain(data.map(function(c) { return c.label; }));
 
         var line = d3.line()

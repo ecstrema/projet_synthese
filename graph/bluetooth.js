@@ -41,7 +41,9 @@ function BbBluetooth(handleNewData) {
                         if (handleNewData) handleNewData(target.value.getInt16(0));
                     }
                     else {
-                        console.error("no target or no value for bluetooth.");
+                        if (handleNewData) handleNewData(0);
+
+                        // console.error("no target or no value for bluetooth.");
                     }
                 });
                 characteristic.startNotifications();
@@ -51,5 +53,5 @@ function BbBluetooth(handleNewData) {
         });
     }
 
-    return { connect, handleNewData }
+    return { connect }
 }
