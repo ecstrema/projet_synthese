@@ -1,4 +1,5 @@
 export class BbBluetooth {
+  /** @type {number[]} */
   static data = [];
   static handleNewData = () => {};
   static addData(v) {
