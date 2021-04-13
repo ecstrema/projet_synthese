@@ -55,22 +55,6 @@ function realTimeLineChart() {
             .append("path")
               .attr("class", "data");
 
-
-        var legendEnter = gEnter.append("g")
-          .attr("class", "legend")
-          .attr("transform", "translate(" + (width - margin.right - margin.left - 75) + ",25)");
-        legendEnter.append("rect")
-          .attr("width", 50)
-          .attr("height", 40)
-          .attr("fill", "#ffffff")
-          .attr("fill-opacity", 0.7);
-        legendEnter.selectAll("text")
-          .data(data).enter()
-          .append("text")
-            .attr("y", function(d, i) { return (i * 20) + 25; })
-            .attr("x", 5)
-            // .attr("fill", function(d) { return z(d.label); });
-
         var svg = selection.select("svg");
         svg.style("position", "absolute")
           .style("display", "block")
@@ -102,12 +86,6 @@ function realTimeLineChart() {
           .duration(duration)
           .ease(d3.easeLinear)
           .on("start", tick);
-
-        g.selectAll("g .legend text")
-          .data(data)
-          .text(function(d) {
-            return "Poids" + ": " + (d.values[d.values.length - 1].value).toFixed(1) + " kg";
-          });
 
         // For transitions https://bl.ocks.org/mbostock/1642874
         function tick() {
