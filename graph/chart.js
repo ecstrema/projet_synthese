@@ -1,7 +1,7 @@
 function realTimeLineChart() {
     var margin = {top: 40, right: 40, bottom: 40, left: 40},
-        width = 600,
-        height = 400,
+        width = window.innerWidth - 20,
+        height = window.innerHeight - 20,
         duration = 500,
         color = d3.schemeCategory10;
 
@@ -60,7 +60,7 @@ function realTimeLineChart() {
           .attr("transform", "translate(" + (width-margin.right-margin.left-75) + ",25)");
         legendEnter.append("rect")
           .attr("width", 50)
-          .attr("height", 75)
+          .attr("height", 40)
           .attr("fill", "#ffffff")
           .attr("fill-opacity", 0.7);
         legendEnter.selectAll("text")
@@ -71,7 +71,10 @@ function realTimeLineChart() {
             .attr("fill", function(d) { return z(d.label); });
 
         var svg = selection.select("svg");
-        svg.attr('width', width).attr('height', height);
+        svg.style("position", "absolute")
+          .style("display", "block")
+          .attr("height", height)
+          .attr("width", width);
         var g = svg.select("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
