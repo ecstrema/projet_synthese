@@ -1,12 +1,13 @@
 /** @type {{time: number, x: number}[]} */
 const lineArr = [];
 const allData = [];
-const MAX_LENGTH = 200;
-const duration = 100;
+const MAX_LENGTH = 100;
+const duration = 80;
 const chart = realTimeLineChart();
 
 /** @type {boolean} */
-let paused = false;
+// let paused = false;
+let latestData = 0;
 
 function randInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -24,6 +25,7 @@ function seedData() {
 
 let updating = false;
 function updateData(value) {
+    // if (paused) return;
     const now = new Date();
 
     const data = {
@@ -55,6 +57,7 @@ function resize() {
     d3.select("#downloadButton").style("width", window.innerWidth * 0.15 + "px");
 }
 
+
 function setupUi() {
     d3.select("#htmlExceptGraph").style("display", "none");
     const right = d3.select("#chart")
@@ -66,28 +69,27 @@ function setupUi() {
     right.append("h1")
         .attr("id", "currentWeight")
         .style("text-align", "center")
-        .text("0.00")
+        .text("0.00");
     right.append("div")
         .attr("class", "button")
         .attr("id", "downloadButton")
         .style("width", window.innerWidth * 0.1 + "px")
         .text("Télécharger")
         .on("click", () => saveAs(new Blob([JSON.stringify(lineArr)]), "data.txt"));
-    right.append("div")
-        .attr("class", "button")
-        .attr("id", "pauseButton")
-        .style("width", window.innerWidth * 0.1 + "px")
-        .text("Mettre en pause")
-        .on("click", () => {
-            saveAs(new Blob([JSON.stringify(lineArr)]), "data.txt");
-        });
+    // right.append("div")
+    //     .attr("class", "button")
+    //     .attr("id", "pauseButton")
+    //     .style("width", window.innerWidth * 0.1 + "px")
+    //     .text("Mettre en pause")
+    //     .on("click", () => {
+    //         paused = !paused;
+    //     });
 }
 
 if (!navigator.bluetooth) {
     alert("Ce navigateur ne supporte pas le Bluetooth. Google Chrome est connu comme offrant cette fonctionalité.");
 }
 
-let latestData = 0;
 document.addEventListener("DOMContentLoaded", function() {
     d3.select("#bluetoothButton").on("click", function() {
         const b = BbBluetooth((v) => {
@@ -100,8 +102,10 @@ document.addEventListener("DOMContentLoaded", function() {
             d3.select("#chart").datum(lineArr).call(chart);
             d3.select(window).on('resize', resize);
 
-            window.setInterval(() => updateData(latestData), 100);
+            window.setInterval(() => updateData(latestData), duration);
         }).catch((e) => {
+            console.warn(e);
+            alert("Pas de bluetooth. Voici une simulation.")
             setupUi();
 
             seedData();

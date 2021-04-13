@@ -32,7 +32,7 @@ function realTimeLineChart() {
         z.domain(data.map(function(c) { return c.label; }));
 
         var line = d3.line()
-          .curve(d3.curveBasis)
+          // .curve(d3.curveBasis)
           .x(function(d) { return x(d.time); })
           .y(function(d) { return y(d.value); });
 
@@ -77,7 +77,7 @@ function realTimeLineChart() {
         g.selectAll("g path.data")
           .data(data)
           .style("stroke", function(d) { return z(d.label); })
-          .style("stroke-width", 1)
+          .style("stroke-width", 3)
           .style("fill", "none")
           .transition()
           .duration(duration)
