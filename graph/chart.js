@@ -29,7 +29,7 @@ function realTimeLineChart() {
 
         x.domain([xMin, xMax]);
         y.domain([
-          d3.min(data, function(c) { return d3.min(c.values, function(d) { return d.value; })}),
+          0,
           d3.max(data, function(c) { return d3.max(c.values, function(d) { return d.value; })})
         ]);
         z.domain(data.map(function(c) { return c.label; }));

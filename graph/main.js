@@ -1,15 +1,16 @@
-var lineArr = [];
-var MAX_LENGTH = 100;
-var duration = 500;
-var chart = realTimeLineChart();
+/** @type {{time: number, x: number}[]} */
+const lineArr = [];
+const MAX_LENGTH = 100;
+const duration = 100;
+const chart = realTimeLineChart();
 
 function randInt(min, max) {
     return Math.floor(Math.random() * max) + min;
 }
 
 function seedData() {
-    var now = new Date();
-    for (var i = 0; i < MAX_LENGTH; ++i) {
+    const now = new Date();
+    for (let i = 0; i < MAX_LENGTH; ++i) {
         lineArr.push({
             time: new Date(now.getTime() - ((MAX_LENGTH - i) * duration)),
             x: 0,
@@ -17,12 +18,12 @@ function seedData() {
     }
 }
 
-function updateData() {
-    var now = new Date();
+function updateData(value) {
+    const now = new Date();
 
-    var lineData = {
+    const lineData = {
         time: now,
-        x: randInt(0, 10000) * 0.01,
+        x: value,
     };
     lineArr.push(lineData);
     d3.select("#chart")
@@ -41,15 +42,35 @@ function resize() {
     c.call(chart);
 }
 
+if (!navigator.bluetooth) {
+    alert("Ce navigateur ne supporte pas le Bluetooth. Google Chrome est connu comme offrant cette fonctionalité.");
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     d3.select("#bluetoothButton").on("click", function() {
-        //connect.toBluetooth
-        d3.select("#htmlExceptGraph").style("display", "none");
+        const b = BbBluetooth();
+        b.connect().then(() => {
+            d3.select("#htmlExceptGraph").style("display", "none");
 
+            seedData();
+            b.handleNewData = (value) => {
+                const lineData = {
+                    time: now,
+                    x: value * 0.01,
+                };
+                lineArr.push(lineData);
+            }
+            d3.select("#chart").datum(lineArr).call(chart);
+            d3.select(window).on('resize', resize);
+        }).catch((e) => {
 
-        seedData();
-        window.setInterval(updateData, 100);
-        d3.select("#chart").datum(lineArr).call(chart);
-        d3.select(window).on('resize', resize);
+            d3.select("#htmlExceptGraph").style("display", "none");
+
+            seedData();
+            window.setInterval(() => updateData(randInt(2000, 10000) * 0.01), duration);
+            d3.select("#chart").datum(lineArr).call(chart);
+            d3.select(window).on('resize', resize);
+        })
+
     })
 });
