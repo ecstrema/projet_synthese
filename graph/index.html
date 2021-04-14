@@ -149,7 +149,7 @@
         }
 
         function start() {
-            const numberElements = 300;
+            const shownInterval = 5000;
 
             // Globals
             let updateCount = 0;
@@ -240,12 +240,15 @@
             let updating = false;
 
             return function addData(data) {
-                if (updating) return;
+                if (updating) {
+                    console.log("updating");
+                    return;
+                }
                 updating = true;
 
                 chartData.push(data);
                 const xScale = chart.options.scales.x;
-                xScale.min = data.x - 5000;
+                xScale.min = data.x - shownInterval;
                 xScale.max = data.x;
                 chart.update();
                 currentWeight.innerText = data.y.toFixed(2) + " kg";
