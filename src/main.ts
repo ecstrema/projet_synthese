@@ -16,7 +16,12 @@ const bluetoothButton = document.getElementById("bluetoothButton");
 bluetoothButton?.addEventListener("click", (ev: Event) => {
     BbBluetooth.connect().then(() => {
         startGame();
-    }).catch((err) => {
+    }).catch((err: Error) => {
+        // User cancelled the request device chooser
+        if (err.name === "NotFoundError") {
+            startGame();
+            return;
+        }
         console.error("An error ocurred:", err);
     })
 })

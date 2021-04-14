@@ -1,9 +1,14 @@
 export class BbMouse {
     static init() {
         window.addEventListener("mousemove", (ev: MouseEvent) => {
-            this.mouseX = ev.clientX;
-            this.mouseY = ev.clientY;
+            BbMouse.mouseX = ev.clientX;
+            BbMouse.mouseY = ev.clientY;
         })
+        window.addEventListener("touchmove", (ev: TouchEvent) => {
+            ev.preventDefault();
+            BbMouse.mouseX = ev.touches[0].clientX;
+            BbMouse.mouseY = ev.touches[0].clientY;
+        }, {passive: false})
     }
 
     static mouseX: number = -1;

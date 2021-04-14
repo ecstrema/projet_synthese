@@ -93,11 +93,12 @@
             alert("Ce navigateur ne supporte pas le Bluetooth. Google Chrome est connu comme offrant cette fonctionalité.");
         }
         const allData = [];
-        let latest = 0;
+        // initial values
+        let latest = {x: 0, y: 0};
         let paused = false;
         document.getElementById("bluetoothButton").addEventListener("click", () => {
             const b = BbBluetooth((v) => {
-                const a = v * 0.01;
+                const a = {x: Date.now(), y: v * 0.01};
                 allData.push(a);
                 latest = a;
             });
@@ -116,7 +117,10 @@
 
                     function updateData() {
                         if (!paused) {
-                            latest = Math.min(Math.max(latest + Math.random() * 10 - 5, 10), 90);
+                            latest = {
+                                x: Date.now(),
+                                y: Math.min(Math.max(latest.y + Math.random() * 10 - 5, 10), 90),
+                            };
                             addData(latest);
                         }
 
@@ -145,8 +149,6 @@
         }
 
         function start() {
-            const chartLabels = [];
-            const chartData = [];
             const numberElements = 300;
 
             // Globals
@@ -178,6 +180,8 @@
                     }]
                 },
                 options: {
+                    parsing: false,
+                    normalized: true,
                     scales: {
                         x: {
                             title: {
@@ -228,31 +232,24 @@
                 },
             });
             // chart.options.animations.y = false;
-            chart.options.animations.x = true;
-            // chart.options.animations.y = false; // disables animation defined by the 'y' property
+            // chart.options.animations.x = true;
+            const chartData = chart.data.datasets[0].data;
 
             const currentWeight = document.getElementById("currentWeight");
 
-            updating = false;
+            let updating = false;
+
             return function addData(data) {
                 if (updating) return;
                 updating = true;
-                chartLabels.push(new Date());
+
                 chartData.push(data);
-                if(chartData.length > numberElements) {
-                    chart.data.labels = chartLabels.slice(chartLabels.length - numberElements - 1, chartLabels.length - 1);
-                    chart.data.datasets[0].data = chartData.slice(chartData.length - numberElements - 1, chartData.length - 1);
-                }
-                else {
-                    chart.data.labels = chartLabels;
-                    chart.data.datasets[0].data = chartData;
-                }
                 const xScale = chart.options.scales.x;
-                const now = Date.now();
-                xScale.min = now - 5000;
-                xScale.max = now;
+                xScale.min = data.x - 5000;
+                xScale.max = data.x;
                 chart.update();
-                currentWeight.innerText = data.toFixed(2) + " kg";
+                currentWeight.innerText = data.y.toFixed(2) + " kg";
+
                 updating = false;
             };
         }
