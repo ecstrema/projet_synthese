@@ -1,6 +1,6 @@
 function realTimeLineChart() {
     var margin = {top: 40, right: 40, bottom: 40, left: 40},
-        width = window.innerWidth - 20,
+        width = (window.innerWidth - 20) * 0.8,
         height = window.innerHeight - 20,
         duration = 500,
         color = d3.schemeCategory10;
@@ -18,8 +18,8 @@ function realTimeLineChart() {
         });
 
         var t = d3.transition().duration(duration).ease(d3.easeLinear),
-            x = d3.scaleTime().rangeRound([0, width-margin.left-margin.right]),
-            y = d3.scaleLinear().rangeRound([height-margin.top-margin.bottom, 0]),
+            x = d3.scaleTime().rangeRound([0, width - margin.left - margin.right]),
+            y = d3.scaleLinear().rangeRound([height - margin.top - margin.bottom, 0]),
             z = d3.scaleOrdinal(color);
 
         var xMin = d3.min(data, function(c) { return d3.min(c.values, function(d) { return d.time; })});
@@ -28,14 +28,11 @@ function realTimeLineChart() {
         })).getTime() - (duration*2));
 
         x.domain([xMin, xMax]);
-        y.domain([
-          d3.min(data, function(c) { return d3.min(c.values, function(d) { return d.value; })}),
-          d3.max(data, function(c) { return d3.max(c.values, function(d) { return d.value; })})
-        ]);
+        y.domain([0, 100]);
         z.domain(data.map(function(c) { return c.label; }));
 
         var line = d3.line()
-          .curve(d3.curveBasis)
+          // .curve(d3.curveBasis)
           .x(function(d) { return x(d.time); })
           .y(function(d) { return y(d.value); });
 
@@ -46,29 +43,14 @@ function realTimeLineChart() {
         gEnter.append("defs").append("clipPath")
             .attr("id", "clip")
           .append("rect")
-            .attr("width", width-margin.left-margin.right)
-            .attr("height", height-margin.top-margin.bottom);
+            .attr("width", width - margin.left - margin.right)
+            .attr("height", height - margin.top - margin.bottom);
         gEnter.append("g")
             .attr("class", "lines")
             .attr("clip-path", "url(#clip)")
           .selectAll(".data").data(data).enter()
             .append("path")
               .attr("class", "data");
-
-        var legendEnter = gEnter.append("g")
-          .attr("class", "legend")
-          .attr("transform", "translate(" + (width-margin.right-margin.left-75) + ",25)");
-        legendEnter.append("rect")
-          .attr("width", 50)
-          .attr("height", 40)
-          .attr("fill", "#ffffff")
-          .attr("fill-opacity", 0.7);
-        legendEnter.selectAll("text")
-          .data(data).enter()
-          .append("text")
-            .attr("y", function(d, i) { return (i*20) + 25; })
-            .attr("x", 5)
-            .attr("fill", function(d) { return z(d.label); });
 
         var svg = selection.select("svg");
         svg.style("position", "absolute")
@@ -79,7 +61,7 @@ function realTimeLineChart() {
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         g.select("g.axis.x")
-          .attr("transform", "translate(0," + (height-margin.bottom-margin.top) + ")")
+          .attr("transform", "translate(0," + (height - margin.bottom - margin.top) + ")")
           .transition(t)
           .call(d3.axisBottom(x).ticks(5));
         g.select("g.axis.y")
@@ -89,24 +71,18 @@ function realTimeLineChart() {
 
         g.select("defs clipPath rect")
           .transition(t)
-          .attr("width", width-margin.left-margin.right)
-          .attr("height", height-margin.top-margin.right);
+          .attr("width", width - margin.left - margin.right)
+          .attr("height", height - margin.top - margin.right);
 
         g.selectAll("g path.data")
           .data(data)
           .style("stroke", function(d) { return z(d.label); })
-          .style("stroke-width", 1)
+          .style("stroke-width", 3)
           .style("fill", "none")
           .transition()
           .duration(duration)
           .ease(d3.easeLinear)
           .on("start", tick);
-
-        g.selectAll("g .legend text")
-          .data(data)
-          .text(function(d) {
-            return d.label.toUpperCase() + ": " + d.values[d.values.length-1].value;
-          });
 
         // For transitions https://bl.ocks.org/mbostock/1642874
         function tick() {
