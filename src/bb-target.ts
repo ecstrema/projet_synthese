@@ -4,13 +4,8 @@ import { BbGame } from "./bb-game";
 export class BbTarget extends BbElement {
     touched: boolean = false;
 
-    speed = 1;
-
     constructor(game: BbGame) {
         super();
-
-        this.speed = Math.random() * (game.score.value + 1);
-
         this.bb.height = this.bb.width = game.bb.h * 0.02;
         const margins = game.bb.height * 0.1;
 
@@ -31,7 +26,7 @@ export class BbTarget extends BbElement {
     }
 
     move(game: BbGame) {
-        this.bb.x -= game.bb.width * 0.005 * this.speed;
+        this.bb.x -= game.bb.width * 0.00005 * (game.score.value + 100);
         return this;
     }
 }

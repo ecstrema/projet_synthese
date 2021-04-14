@@ -155,7 +155,12 @@ export class BbGame extends BbElement {
             return;
         }
         this.addTarget();
-        const nextTimeoutIn = Math.max(Math.random() * 5000 / (this.score.value + 1), 1000);
+
+        function bound(value: number, min: number, max: number): number {
+            return Math.min(Math.max(min, value), max);
+        }
+        const nextTimeoutIn = bound(5 - Math.log10(this.score.value) * 3 - Math.random(), 0.5, 4) * 1000;
+
         setTimeout(this.addTargetCallbacks.bind(this), nextTimeoutIn);
     }
 
