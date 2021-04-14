@@ -1,6 +1,6 @@
 /**
  * @param {(value: number) => void} handleNewData
- * @returns {{connect: () => Promise<void>, handleNewData: (value: number) => void}}
+ * @returns {{connect: () => Promise<void>}}
  */
 function BbBluetooth(handleNewData) {
     async function connect() {
@@ -36,6 +36,7 @@ function BbBluetooth(handleNewData) {
             if (characteristic.properties.notify) {
                 characteristic.addEventListener('characteristicvaluechanged', ev => {
                     // cast to any to disable warning about value not being a property of event handler.
+                    /** @type {any} */
                     const target = ev.target;
                     if (target?.value?.getInt16(0)) {
                         if (handleNewData) handleNewData(target.value.getInt16(0));
