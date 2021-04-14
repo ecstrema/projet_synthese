@@ -6,6 +6,7 @@ import { BbPlayer } from "./bb-player";
 import { BbScore } from "./bb-score";
 import { BbTarget } from "./bb-target";
 import { BbArrayUtils } from "./utils/bb-array-utils";
+import { bound } from "./utils/bb-math";
 
 export class BbGame extends BbElement {
     ctx: CanvasRenderingContext2D | null;
@@ -156,11 +157,11 @@ export class BbGame extends BbElement {
         }
         this.addTarget();
 
-        function bound(value: number, min: number, max: number): number {
-            return Math.min(Math.max(min, value), max);
-        }
-        const nextTimeoutIn = bound(5 - Math.log10(this.score.value) * 3 - Math.random(), 0.5, 4) * 1000;
 
+        const nextTimeoutIn = bound(5 - Math.log10(this.score.value) * 3 - Math.random(), 0.5, 4) * 1000;
+        if (this.score.value > 30) {
+            bound(this.player.bb.height = this.player.bb.width = this.player.bb.height * 0.99, 10);
+        }
         setTimeout(this.addTargetCallbacks.bind(this), nextTimeoutIn);
     }
 
