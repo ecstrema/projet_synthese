@@ -1,0 +1,232 @@
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js" integrity="sha512-CTiTx27lUxqoBGKfEHj2giGQTRdWgwJHNixfAOzPo5Hb86I03/YwYt+wpTM2TjFGespwSgQwUWKtLHPt2zTTDA==" crossorigin="anonymous"></script>
+    <script src="bluetooth.js"></script>
+    <script src="saveAs.js"></script>
+
+    <style>
+        #xAccel {
+            position: absolute;
+            display: block;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-size: 14px;
+            color: #333;
+            box-sizing: border-box;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 0px; /* Header Height */
+            bottom: 0px; /* Footer Height */
+            right: 0px;
+            left: 0px;
+        }
+        .button {
+            cursor: pointer;
+            border-radius: 4px;
+            border: 1px solid rgb(163, 163, 163);
+            /* border: 1px solid #eee; */
+            background-color: #fafafa;
+            height: 40px;
+            width: 200px;
+            margin: 0 8px 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease-in-out;
+            line-height: 24px;
+        }
+        .button:hover {
+            box-shadow: 0 0 6px rgb(35 173 255);
+        }
+    </style>
+
+</head>
+<body>
+    <div id="htmlExceptGraph" class="column">
+        <div id="bluetoothButton" tabindex="0" class="button">
+            Connecter
+        </div>
+    </div>
+    <div id="chartDiv" style="display: none;">
+        <div id="xAccel">
+            <canvas id="xAccelChart"></canvas>
+        </div>
+        <div id="rightDiv" style="position: absolute; right: 20px; z-index: 10;">
+            <h1 id="currentWeight" style="text-align: center;">0.00</h1>
+            <div id="downloadButton" tabindex="0" class="button" >Télécharger</div>
+        </div>
+    </div>
+    <script>
+        if (!navigator.bluetooth) {
+            alert("Ce navigateur ne supporte pas le Bluetooth. Google Chrome est connu comme offrant cette fonctionalité.");
+        }
+        const allData = [];
+        let latest = 0;
+        let paused = false;
+        document.getElementById("bluetoothButton").addEventListener("click", () => {
+            const b = BbBluetooth((v) => {
+                const a = v * 0.01;
+                allData.push(a);
+                latest = a;
+            });
+            const connected = b.connect();
+            const addData = start();
+            setupUI();
+            connected.then(() => {
+                    function updateData() {
+                        if (!paused) addData(latest);
+                        requestAnimationFrame(updateData);
+                    }
+
+                    requestAnimationFrame(updateData);
+                }).catch(() => {
+                    alert("Pas de bluetooth. Voici une simulation.")
+
+                    function updateData() {
+                        if (!paused) {
+                            latest = Math.min(Math.max(latest + Math.random() * 10 - 5, 10), 90);
+                            addData(latest);
+                        }
+
+                        requestAnimationFrame(updateData);
+                    }
+
+                    requestAnimationFrame(updateData);
+                })
+        })
+
+        function setupUI() {
+            document.getElementById("htmlExceptGraph").style.display = "none";
+            const chartDiv = document.getElementById("chartDiv");
+            chartDiv.style.display = "block";
+            chartDiv.addEventListener("click", () => {
+                paused = !paused;
+            })
+
+            document.getElementById("rightDiv").style.top = (window.innerHeight * 0.5 - 60) + "px";
+            document.getElementById("downloadButton").addEventListener("click", () => saveAs(new Blob([JSON.stringify(allData)]), "data.txt"));
+        }
+        function uiResize() {
+            document.getElementById("rightDiv").style.top = (window.innerHeight * 0.5 - 60) + "px";
+            document.getElementById("downloadButton").style.width = window.innerWidth * 0.1 + "px";
+        }
+
+        function start() {
+            const chartLabels = [];
+            const chartData = [];
+            const numberElements = 300;
+
+            // // seed datasets
+            // const now = new Date();
+            // for (let i = 0; i < numberElements; i++) {
+            //     chartLabels.push(now - i);
+            //     chartData.push(0);
+            // }
+
+
+            // Globals
+            let updateCount = 0;
+
+            // Chart Objects
+            const xAccelChart = document.getElementById("xAccelChart");
+            const xAccelDiv = document.getElementById("xAccel");
+            function resize() {
+                xAccelDiv.style.height = window.innerHeight - 20;
+                xAccelDiv.style.width = window.innerWidth * 0.8 - 20;
+                uiResize();
+            }
+            resize();
+            window.addEventListener("resize", resize);
+
+            const commonOptions = {
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            displayFormats: {
+                                millisecond: 'hh:mm:ss:S',
+                            },
+                        },
+                        /// Not working???
+                        ticks: {
+                            minRotation: 0,
+                            maxRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: 3,
+                        },
+                        // display: false,
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 100,
+                        },
+                        position: 'right',
+                    }]
+                },
+                legend: { display: false },
+                tooltips:{
+                    enabled: false
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+            };
+            const chart = new Chart(xAccelChart, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: "Poids",
+                        data: 0,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255,99,132,1)',
+                        borderWidth: 1,
+                        pointRadius: 0
+                    }]
+                },
+                options: Object.assign({}, commonOptions, {
+                    title:{
+                        display: true,
+                        text: "Poids",
+                        fontSize: 18
+                    }
+                }),
+            });
+            chart.options.animation = false; // disables all animations
+
+            const currentWeight = document.getElementById("currentWeight");
+
+            updating = false;
+            return function addData(data) {
+                if (updating) return;
+                updating = true;
+                chartLabels.push(new Date());
+                chartData.push(data);
+                if(chartData.length > numberElements) {
+                    chart.data.labels = chartLabels.slice(chartLabels.length - numberElements - 1, chartLabels.length - 1);
+                    chart.data.datasets[0].data = chartData.slice(chartData.length - numberElements - 1, chartData.length - 1);
+                }
+                else {
+                    chart.data.labels = chartLabels;
+                    chart.data.datasets[0].data = chartData;
+                }
+                const ticks = chart.options.scales.xAxes[0].ticks;
+                const now = performance.now();
+                ticks.min = now - 5000;
+                ticks.max = now;
+                chart.update();
+                currentWeight.innerText = data.toFixed(2) + " kg";
+                updating = false;
+            };
+        }
+    </script>
+</body>
+</html>
