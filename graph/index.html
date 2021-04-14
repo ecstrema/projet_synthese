@@ -98,7 +98,7 @@
         let paused = false;
         document.getElementById("bluetoothButton").addEventListener("click", () => {
             const b = BbBluetooth((v) => {
-                const a = {x: Date.now(), y: v * 0.01};
+                const a = { x: Date.now(), y: v * 0.01 };
                 allData.push(a);
                 latest = a;
             });
