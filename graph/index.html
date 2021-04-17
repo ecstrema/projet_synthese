@@ -28,7 +28,7 @@
             right: 0px;
             left: 0px;
         }
-        .button {
+        button {
             cursor: pointer;
             border-radius: 4px;
             border: 1px solid rgb(163, 163, 163);
@@ -45,8 +45,9 @@
             transition: all 0.2s ease-in-out;
             line-height: 24px;
             box-shadow: 2px 2px 6px #0004;
+            box-sizing: content-box;
         }
-        .button:hover {
+        button:hover {
             box-shadow: 0 0 6px rgb(35 173 255);
         }
 
@@ -74,7 +75,7 @@
 </head>
 <body>
     <div id="htmlExceptGraph" class="column">
-        <div id="bluetoothButton" tabindex="0" class="button">
+        <button id="bluetoothButton">
             Connecter
         </div>
     </div>
@@ -85,7 +86,9 @@
         </div>
         <div id="rightDiv" style="position: absolute; right: 20px;">
             <h1 id="currentWeight" style="text-align: center;">0.00</h1>
-            <div id="downloadButton" tabindex="0" class="button" >Télécharger</div>
+            <button id="downloadButton">Télécharger</button>
+            <label for="maxWeight">Poids Maximum</label><br/>
+            <input type="number" id="maxWeight" value="80" style="width: 160px;"/>
         </div>
     </div>
     <script>
@@ -119,7 +122,7 @@
                         if (!paused) {
                             latest = {
                                 x: Date.now(),
-                                y: Math.min(Math.max(latest.y + Math.random() * 10 - 5, 10), 90),
+                                y: Math.min(Math.max(latest.y + Math.random() * 10 - 5, 10), 70),
                             };
                             addData(latest);
                         }
@@ -133,9 +136,8 @@
 
         function setupUI() {
             document.getElementById("htmlExceptGraph").style.display = "none";
-            const chartDiv = document.getElementById("chartDiv");
-            chartDiv.style.display = "block";
-            chartDiv.addEventListener("click", () => {
+            document.getElementById("chartDiv").style.display = "block";
+            document.getElementById("xAccel").addEventListener("click", () => {
                 paused = !paused;
                 document.getElementById("overlay").style.display = paused ? "block" : "none";
             })
@@ -164,6 +166,9 @@
             }
             resize();
             window.addEventListener("resize", resize);
+
+            /** @type {HTMLInputElement} */
+            const maxWeight = document.getElementById("maxWeight");
 
             const chart = new Chart(xAccelChart, {
                 type: 'line',
@@ -208,10 +213,11 @@
                             },
                             beginAtZero: true,
                             min: 0,
-                            max: 100,
+                            max: Number(maxWeight.value),
                             position: 'right',
                         }
                     },
+
 
                     animation: false,
                     responsive: true,
@@ -234,8 +240,10 @@
             // chart.options.animations.y = false;
             // chart.options.animations.x = true;
             const chartData = chart.data.datasets[0].data;
-
-            const currentWeight = document.getElementById("currentWeight");
+            maxWeight.addEventListener("change", (ev) => {
+                const v = ev?.target?.value
+                if (v) chart.options.scales.y.max = Number(v);
+            })
 
             let updating = false;
 
