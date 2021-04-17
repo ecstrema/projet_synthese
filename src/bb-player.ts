@@ -4,6 +4,12 @@ import { BbMouse } from "./bb-mouse";
 import { BbPacman } from "./bb-pacman";
 
 export class BbPlayer extends BbPacman {
+    private static maxWeight: number = 8000;
+
+    public static setMaxWeight(value: number) {
+        BbPlayer.maxWeight = value * 100;
+    }
+
     constructor(game: BbGame) {
         super();
 
@@ -28,7 +34,7 @@ export class BbPlayer extends BbPacman {
             this.bb.y = BbMouse.mouseY - this.bb.h * 0.5;
         }
         else {
-            this.bb.y = (game.bb.h - this.bb.h) * BbBluetooth.data / 8000;
+            this.bb.y = (game.bb.h - this.bb.h) * BbBluetooth.data / BbPlayer.maxWeight;
         }
     }
 }

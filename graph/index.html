@@ -88,7 +88,7 @@
             <h1 id="currentWeight" style="text-align: center;">0.00</h1>
             <button id="downloadButton">Télécharger</button>
             <label for="maxWeight">Poids Maximum</label><br/>
-            <input type="number" id="maxWeight" value="100"/>
+            <input type="number" id="maxWeight" value="80"/>
         </div>
     </div>
     <script>
@@ -122,7 +122,7 @@
                         if (!paused) {
                             latest = {
                                 x: Date.now(),
-                                y: Math.min(Math.max(latest.y + Math.random() * 10 - 5, 10), 90),
+                                y: Math.min(Math.max(latest.y + Math.random() * 10 - 5, 10), 70),
                             };
                             addData(latest);
                         }
