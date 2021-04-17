@@ -7,18 +7,14 @@ export class BbPacman extends BbElement {
     static mouthOpening: boolean = false;
     static mouthAngleStep: number = 0.005;
 
-    public set goingLeft(v: boolean) {
-        this.mouthSide = Number(!v);
-    }
-
-    private mouthSide = 1; // * Math.PI
+    public mouthSide = 1; // * Math.PI
 
     paint(ctx: CanvasRenderingContext2D) {
         ctx.save();
 
         const radius = this.bb.w * 0.5;
 
-        const backAngle = Number(!this.mouthSide);
+        const backAngle = this.mouthSide - 1;
 
         ctx.beginPath();
         ctx.arc(this.bb.x + radius,

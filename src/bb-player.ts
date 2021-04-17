@@ -17,11 +17,15 @@ export class BbPlayer extends BbPacman {
             throw new Error("This player is not part of a game.")
         }
         else {
-            this.bb.width = this.bb.height = game.bb.height * 0.3;
+            this.resetSize(game);
 
             this.bb.y = (game.bb.h - this.bb.h) * 0.5;
             this.bb.x = (game.bb.w - this.bb.w) * 0.15;
         }
+    }
+
+    resetSize(game: BbGame) {
+        this.bb.width = this.bb.height = game.bb.height * 0.3;
     }
 
     move(game: BbGame) {

@@ -1,5 +1,6 @@
 import { BbBackground } from "./bb-background";
 import { BbElement } from "./bb-element";
+import { BbLives } from "./bb-lives";
 import { BbMouse } from "./bb-mouse";
 import { BbPacman } from "./bb-pacman";
 import { BbPlayer } from "./bb-player";
@@ -8,17 +9,18 @@ import { BbTarget } from "./bb-target";
 import { BbArrayUtils } from "./utils/bb-array-utils";
 import { bound } from "./utils/bb-math";
 
+
 export class BbGame extends BbElement {
     ctx: CanvasRenderingContext2D | null;
 
     playing: boolean = false;
-    supplementaryLives: number = 5;
 
     score: BbScore;
 
     player: BbPlayer;
-    targets: (BbTarget|null)[];
+    targets: BbTarget[];
     background: BbBackground;
+    lives: BbLives;
 
     constructor() {
         super();
@@ -39,6 +41,7 @@ export class BbGame extends BbElement {
         this.ctx = canvas.getContext("2d");
 
         this.score = new BbScore();
+        this.lives = new BbLives(this);
         this.player = new BbPlayer(this);
         this.background = new BbBackground();
         this.targets = [];
@@ -54,6 +57,7 @@ export class BbGame extends BbElement {
     }
 
     restart() {
+        this.lives.reset();
         this.targets = [];
         this.score.reset();
         this.background.reset();
@@ -80,8 +84,10 @@ export class BbGame extends BbElement {
         this.background.move(this);
         this.background.paint(this.ctx);
         this.score.paint(this.ctx);
+        this.lives.paint(this.ctx);
         this.player.move(this);
         this.player.paint(this.ctx);
+
         this.targets.forEach((t: BbTarget|null) => {
             if (!t) {
                 return;
@@ -91,8 +97,11 @@ export class BbGame extends BbElement {
                 t.paint(this.ctx);
             }
             else if (t.bb.x < 0) {
-                this.supplementaryLives--;
-                if (this.supplementaryLives < 0) {
+                this.lives.supplementaryLives--;
+                this.removeTarget(t);
+                t.touched = true;
+
+                if (this.lives.supplementaryLives < 0) {
                     this.playing = false;
                     this.gameOverFrame();
                 }
