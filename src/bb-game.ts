@@ -8,7 +8,6 @@ import { BbTarget } from "./bb-target";
 import { BbArrayUtils } from "./utils/bb-array-utils";
 import { bound } from "./utils/bb-math";
 
-
 export class BbGame extends BbElement {
     ctx: CanvasRenderingContext2D | null;
 
@@ -43,8 +42,8 @@ export class BbGame extends BbElement {
         this.player = new BbPlayer(this);
         this.targets = [];
 
-        this.ctx?.canvas.addEventListener("click", () => this.restartIfNotPlaying());
-        this.ctx?.canvas.addEventListener("keyup", () => this.restartIfNotPlaying());
+        this.ctx?.canvas.addEventListener("click", this.restartIfNotPlaying);
+        this.ctx?.canvas.addEventListener("keyup", this.restartIfNotPlaying);
     }
 
     restartIfNotPlaying() {
