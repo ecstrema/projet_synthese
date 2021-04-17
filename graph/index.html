@@ -28,7 +28,7 @@
             right: 0px;
             left: 0px;
         }
-        .button {
+        button {
             cursor: pointer;
             border-radius: 4px;
             border: 1px solid rgb(163, 163, 163);
@@ -45,8 +45,9 @@
             transition: all 0.2s ease-in-out;
             line-height: 24px;
             box-shadow: 2px 2px 6px #0004;
+            box-sizing: content-box;
         }
-        .button:hover {
+        button:hover {
             box-shadow: 0 0 6px rgb(35 173 255);
         }
 
@@ -74,7 +75,7 @@
 </head>
 <body>
     <div id="htmlExceptGraph" class="column">
-        <div id="bluetoothButton" tabindex="0" class="button">
+        <button id="bluetoothButton">
             Connecter
         </div>
     </div>
@@ -85,9 +86,9 @@
         </div>
         <div id="rightDiv" style="position: absolute; right: 20px;">
             <h1 id="currentWeight" style="text-align: center;">0.00</h1>
-            <div id="downloadButton" tabindex="0" class="button" >Télécharger</div>
+            <button id="downloadButton">Télécharger</button>
+            <label for="maxWeight">Poids Maximum</label><br/>
             <input type="number" id="maxWeight" value="100"/>
-            <label for="maxWeight">Poids Maximum</label>
         </div>
     </div>
     <script>
