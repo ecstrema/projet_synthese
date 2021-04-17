@@ -41,9 +41,10 @@ export class BbGame extends BbElement {
         this.lives = new BbLives(this);
         this.player = new BbPlayer(this);
         this.targets = [];
-
-        this.ctx?.canvas.addEventListener("click", this.restartIfNotPlaying);
-        this.ctx?.canvas.addEventListener("keyup", this.restartIfNotPlaying);
+        if (this.ctx) {
+            this.ctx.canvas.addEventListener("click", this.restartIfNotPlaying.bind(this));
+            this.ctx.canvas.addEventListener("keyup", this.restartIfNotPlaying.bind(this));
+        }
     }
 
     restartIfNotPlaying() {
@@ -53,6 +54,7 @@ export class BbGame extends BbElement {
     }
 
     restart() {
+        this.player.resetSize(this);
         this.lives.reset();
         this.targets = [];
         this.score.reset();
