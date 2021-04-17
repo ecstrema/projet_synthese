@@ -86,6 +86,8 @@
         <div id="rightDiv" style="position: absolute; right: 20px;">
             <h1 id="currentWeight" style="text-align: center;">0.00</h1>
             <div id="downloadButton" tabindex="0" class="button" >Télécharger</div>
+            <input type="number" id="maxWeight" value="100"/>
+            <label for="maxWeight">Poids Maximum</label>
         </div>
     </div>
     <script>
@@ -133,9 +135,8 @@
 
         function setupUI() {
             document.getElementById("htmlExceptGraph").style.display = "none";
-            const chartDiv = document.getElementById("chartDiv");
-            chartDiv.style.display = "block";
-            chartDiv.addEventListener("click", () => {
+            document.getElementById("chartDiv").style.display = "block";
+            document.getElementById("xAccel").addEventListener("click", () => {
                 paused = !paused;
                 document.getElementById("overlay").style.display = paused ? "block" : "none";
             })
@@ -164,6 +165,9 @@
             }
             resize();
             window.addEventListener("resize", resize);
+
+            /** @type {HTMLInputElement} */
+            const maxWeight = document.getElementById("maxWeight");
 
             const chart = new Chart(xAccelChart, {
                 type: 'line',
@@ -208,10 +212,11 @@
                             },
                             beginAtZero: true,
                             min: 0,
-                            max: 100,
+                            max: Number(maxWeight.value),
                             position: 'right',
                         }
                     },
+
 
                     animation: false,
                     responsive: true,
@@ -234,8 +239,10 @@
             // chart.options.animations.y = false;
             // chart.options.animations.x = true;
             const chartData = chart.data.datasets[0].data;
-
-            const currentWeight = document.getElementById("currentWeight");
+            maxWeight.addEventListener("change", (ev) => {
+                const v = ev?.target?.value
+                if (v) chart.options.scales.y.max = Number(v);
+            })
 
             let updating = false;
 
