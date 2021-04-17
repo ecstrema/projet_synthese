@@ -61,7 +61,7 @@ export class BbGame extends BbElement {
         this.lives.reset();
         this.targets = [];
         this.score.reset();
-        this.background.reset();
+        this.background.restart();
         this.start();
     }
 
@@ -82,43 +82,47 @@ export class BbGame extends BbElement {
 
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
-        this.background.move(this);
-        this.background.paint(this.ctx);
-        this.score.paint(this.ctx);
-        this.lives.paint(this.ctx);
-        this.player.move(this);
-        this.player.paint(this.ctx);
+        const allTargetsPromises: Promise<void>[] = []
+        allTargetsPromises.push(Promise.resolve().then(() => this.background.paint(this.ctx as CanvasRenderingContext2D)))
+        allTargetsPromises.push(Promise.resolve().then(() => this.score.paint(this.ctx as CanvasRenderingContext2D)))
+        allTargetsPromises.push(Promise.resolve().then(() => this.lives.paint(this.ctx as CanvasRenderingContext2D)))
+        allTargetsPromises.push(Promise.resolve().then(() => {
+            this.player.move(this);
+            this.player.paint(this.ctx as CanvasRenderingContext2D);
+        }))
 
         this.targets.forEach((t: BbTarget|null) => {
-            if (!t) {
-                return;
-            }
-            t.move(this);
-            if (t.bb.intersects(this.bb) && this.ctx) {
-                t.paint(this.ctx);
-            }
-            else if (t.bb.x < 0) {
-                this.lives.supplementaryLives--;
-                this.removeTarget(t);
-                t.touched = true;
-
-                if (this.lives.supplementaryLives < 0) {
-                    this.playing = false;
-                    this.gameOverFrame();
+            allTargetsPromises.push(Promise.resolve().then(() => {
+                if (!t) {
+                    return;
                 }
-            }
-            else {
-                this.removeTarget(t);
-                return;
-            }
-            if (!t.touched && this.ctx && this.player.isPointInPacman(t.bb.x, t.bb.y, this.ctx)) {
-                this.removeTarget(t);
-                t.touched = true;
-                this.score.value++;
-            }
-        });
+                t.move(this);
+                if (t.bb.intersects(this.bb) && this.ctx) {
+                    t.paint(this.ctx);
+                }
+                else if (t.bb.x < 0) {
+                    this.lives.supplementaryLives--;
+                    this.removeTarget(t);
+                    t.touched = true;
 
-        BbPacman.updateMouthAngle();
+                    if (this.lives.supplementaryLives < 0) {
+                        this.playing = false;
+                        this.gameOverFrame();
+                    }
+                }
+                else {
+                    this.removeTarget(t);
+                    return;
+                }
+                if (!t.touched && this.ctx && this.player.isPointInPacman(t.bb.x, t.bb.y, this.ctx)) {
+                    this.removeTarget(t);
+                    t.touched = true;
+                    this.score.value++;
+                }
+            }));
+
+        });
+        Promise.all(allTargetsPromises).then(() => BbPacman.updateMouthAngle());
     }
 
     gameOverFrame(count = 0) {
@@ -182,7 +186,7 @@ export class BbGame extends BbElement {
     start() {
         this.playing = true;
         this.addTargetCallbacks();
-        this.background.start();
+        this.background.restart();
         this.refresh();
     }
 
