@@ -101,7 +101,7 @@ export class BbGame extends BbElement {
                 this.removeTarget(t);
                 return;
             }
-            if (!t.touched && this.ctx && this.player.intersectsWithCircle(t.bb.x, t.bb.y, this.ctx)) {
+            if (!t.touched && t.bb.intersects(this.player.bb)) {
                 this.removeTarget(t);
                 t.touched = true;
                 this.score.value++;
