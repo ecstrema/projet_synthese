@@ -11,7 +11,8 @@ import { bound } from "./utils/bb-math";
 export class BbGame extends BbElement {
     ctx: CanvasRenderingContext2D | null;
 
-    playing = false;
+    playing: boolean = false;
+    supplementaryLives: number = 5;
 
     score: BbScore;
 
@@ -90,8 +91,11 @@ export class BbGame extends BbElement {
                 t.paint(this.ctx);
             }
             else if (t.bb.x < 0) {
-                this.playing = false;
-                this.gameOverFrame();
+                this.supplementaryLives--;
+                if (this.supplementaryLives < 0) {
+                    this.playing = false;
+                    this.gameOverFrame();
+                }
             }
             else {
                 this.removeTarget(t);
