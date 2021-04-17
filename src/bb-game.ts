@@ -1,4 +1,3 @@
-import { BbBackground } from "./bb-background";
 import { BbElement } from "./bb-element";
 import { BbLives } from "./bb-lives";
 import { BbMouse } from "./bb-mouse";
@@ -19,7 +18,6 @@ export class BbGame extends BbElement {
 
     player: BbPlayer;
     targets: BbTarget[];
-    background: BbBackground;
     lives: BbLives;
 
     constructor() {
@@ -43,7 +41,6 @@ export class BbGame extends BbElement {
         this.score = new BbScore();
         this.lives = new BbLives(this);
         this.player = new BbPlayer(this);
-        this.background = new BbBackground();
         this.targets = [];
 
         this.ctx?.canvas.addEventListener("click", () => this.restartIfNotPlaying());
@@ -60,7 +57,6 @@ export class BbGame extends BbElement {
         this.lives.reset();
         this.targets = [];
         this.score.reset();
-        this.background.reset();
         this.start();
     }
 
@@ -81,8 +77,6 @@ export class BbGame extends BbElement {
 
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
-        this.background.move(this);
-        this.background.paint(this.ctx);
         this.score.paint(this.ctx);
         this.lives.paint(this.ctx);
         this.player.move(this);
@@ -181,7 +175,6 @@ export class BbGame extends BbElement {
     start() {
         this.playing = true;
         this.addTargetCallbacks();
-        this.background.start();
         this.refresh();
     }
 
