@@ -41,4 +41,11 @@ export class BbPlayer extends BbPacman {
             this.bb.y = (game.bb.h - this.bb.h) * BbBluetooth.data / BbPlayer.maxWeight;
         }
     }
+
+    moveAndPaint(game: BbGame) {
+        this.move(game);
+        if (game.ctx) {
+            this.paint(game.ctx);
+        }
+    }
 }

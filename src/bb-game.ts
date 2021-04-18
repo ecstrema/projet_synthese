@@ -83,16 +83,14 @@ export class BbGame extends BbElement {
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
         const allTargetsPromises: Promise<void>[] = []
-        allTargetsPromises.push(Promise.resolve().then(() => this.background.paint(this.ctx as CanvasRenderingContext2D)))
+        allTargetsPromises.push(Promise.resolve().then(() => this.background.moveAndPaint(this)))
         allTargetsPromises.push(Promise.resolve().then(() => this.score.paint(this.ctx as CanvasRenderingContext2D)))
         allTargetsPromises.push(Promise.resolve().then(() => this.lives.paint(this.ctx as CanvasRenderingContext2D)))
-        allTargetsPromises.push(Promise.resolve().then(() => {
-            this.player.move(this);
-            this.player.paint(this.ctx as CanvasRenderingContext2D);
-        }))
+        allTargetsPromises.push(Promise.resolve().then(() => this.player.moveAndPaint(this)))
 
         this.targets.forEach((t: BbTarget|null) => {
-            allTargetsPromises.push(Promise.resolve().then(() => {
+            allTargetsPromises.push(
+                Promise.resolve().then(() => {
                 if (!t) {
                     return;
                 }
@@ -120,9 +118,8 @@ export class BbGame extends BbElement {
                     this.score.value++;
                 }
             }));
-
         });
-        Promise.all(allTargetsPromises).then(() => BbPacman.updateMouthAngle());
+        Promise.all(allTargetsPromises).then(BbPacman.updateMouthAngle);
     }
 
     gameOverFrame(count = 0) {
