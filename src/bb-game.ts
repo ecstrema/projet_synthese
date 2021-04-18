@@ -122,7 +122,7 @@ export class BbGame extends BbElement {
         Promise.all(allTargetsPromises).then(BbPacman.updateMouthAngle);
     }
 
-    gameOverFrame(count = 0) {
+    gameOverFrame(count: number = 0) {
         if (this.playing) {
             return;
         }
@@ -166,18 +166,23 @@ export class BbGame extends BbElement {
         BbArrayUtils.fillFirstEmpty(BbTarget, this.targets, this);
     }
 
-    addTargetCallbacks() {
+    addTargetCallbacks(inFrames: number = 0) {
         if (!this.playing) {
             return;
         }
+        if (inFrames > 0) {
+            requestAnimationFrame(() => this.addTargetCallbacks(inFrames - 1));
+            return;
+        }
+
         this.addTarget();
 
 
-        const nextTimeoutIn = bound(5 - Math.log10(this.score.value) * 3 - Math.random(), 0.5, 4) * 1000;
+        const nextTimeoutIn = bound(5 - Math.log10(this.score.value) * 3 - Math.random(), 0.5, 4) * 60;
         if (this.score.value > 30) {
             bound(this.player.bb.height = this.player.bb.width = this.player.bb.height * 0.99, 10);
         }
-        setTimeout(this.addTargetCallbacks.bind(this), nextTimeoutIn);
+        requestAnimationFrame(() => this.addTargetCallbacks(nextTimeoutIn));
     }
 
     start() {
