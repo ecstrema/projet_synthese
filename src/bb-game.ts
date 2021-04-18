@@ -78,7 +78,6 @@ export class BbGame extends BbElement {
             console.error("no drawing context");
             return;
         }
-        requestAnimationFrame(this.refresh.bind(this));
 
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
@@ -119,7 +118,11 @@ export class BbGame extends BbElement {
                 }
             }));
         });
-        Promise.all(allTargetsPromises).then(BbPacman.updateMouthAngle);
+        Promise.all(allTargetsPromises).then(() => {
+            BbPacman.updateMouthAngle();
+            this.player.updatePath();
+            requestAnimationFrame(this.refresh.bind(this));
+        });
     }
 
     gameOverFrame(count: number = 0) {
@@ -176,7 +179,6 @@ export class BbGame extends BbElement {
         }
 
         this.addTarget();
-
 
         const nextTimeoutIn = bound(5 - Math.log10(this.score.value) * 3 - Math.random(), 0.5, 4) * 60;
         if (this.score.value > 30) {
