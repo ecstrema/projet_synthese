@@ -38,7 +38,10 @@ export class BbPlayer extends BbPacman {
             this.bb.y = BbMouse.mouseY - this.bb.h * 0.5;
         }
         else {
-            this.bb.y = (game.bb.h - this.bb.h) * BbBluetooth.data / BbPlayer.maxWeight;
+            // (area * (1 - fraction))
+            // Fraction is the fraction of the max weight.
+            // Area is the area where the player can be.
+            this.bb.y = (game.bb.h - this.bb.h) * (1 - BbBluetooth.data / BbPlayer.maxWeight);
         }
     }
 
