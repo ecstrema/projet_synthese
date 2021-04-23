@@ -38,7 +38,7 @@ export class BbBluetooth {
                         BbBluetooth.data = target.value.getInt16(0);
                     }
                     else {
-                        // console.log(target);
+                        BbBluetooth.data = 0;
                     }
                 });
                 characteristic.startNotifications();
