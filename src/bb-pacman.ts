@@ -7,7 +7,7 @@ export class BbPacman extends BbElement {
     static maxMouthAngle: number = 0.2; // * Math.PI
     static mouthAngle: number = BbPacman.maxMouthAngle;
     static mouthOpening: boolean = false;
-    static mouthAngleStep: number = 0.005; // * Math.PI
+    static mouthAngleStep: number = 0.006; // * Math.PI
 
     public mouthSide = 0; // * Math.PI
 
