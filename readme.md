@@ -2,6 +2,10 @@
 
 Le projet synthèse de Cégep d'Anthony Monton et Rémi Marche.
 
+## Présentation
+
+[Lien](https://sway.office.com/2ZGXsH5C37L7mTJK?ref=Link&loc=mysways)
+
 ## Aperçu
 
 Pour jouer au jeu, que vous ayez ou non une balance bluetooth compatible chez vous, rendez-vous sur <https://marr11317.github.io/projet_synthese>.
