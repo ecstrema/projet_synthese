@@ -7,8 +7,8 @@ function startGame() {
     BbPlayer.setMaxWeight(Number(maxWeightInput.value));
     maxWeightInput.addEventListener("change", (ev: any) => {
         const v = ev?.target?.value
-        if (v) BbPlayer.setMaxWeight(Number(v));;
-    })
+        if (v) BbPlayer.setMaxWeight(Number(v));
+    });
     const htmlExceptGame = document.getElementById("htmlExceptGame");
     htmlExceptGame?.style.setProperty("display", "none");
     const game = BbGame.getGame();
